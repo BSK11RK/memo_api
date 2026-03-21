@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.database import SessionLocal, engine
-from app.auth import create_access_token, get_current_user
+from app.auth import create_access_token, get_current_user, verify_password
 import app.models as models, app.schemas as schemas, app.crud as crud
 
 
@@ -35,7 +35,7 @@ def login(
         models.User.username == form_data.username
     ).first()
     
-    if not user or user.password != form_data.password:
+    if not user or not verify_password(form_data.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     token = create_access_token({"sub": user.username})
@@ -43,19 +43,28 @@ def login(
 
 
 # メモを作成（認証必須）
-@app.post("/memos", response_model=schemas.MemoResponse)
+@app.post("/memos")
 def create_memo(
     memo: schemas.MemoCreate, 
     db: Session =  Depends(get_db),
-    user: str = Depends(get_current_user)
+    username: str = Depends(get_current_user)
 ):
-    return crud.create_memo(db, memo)
+    user = db.query(models.User).filter(
+        models.User.username == username
+    ).first()
+    return crud.create_memo(db, memo, user.id)
 
 
 # 全件取得
-@app.get("/memos", response_model=list[schemas.MemoResponse])
-def read_memos(db: Session = Depends(get_db)):
-    return crud.get_memos(db)
+@app.get("/memos")
+def read_memos(
+    db: Session = Depends(get_db),
+    username: str = Depends(get_current_user)
+):
+    user = db.query(models.User).filter(
+        models.User.username == username
+    ).first()
+    return crud.get_memos(db, user.id)
 
 
 # 1件取得

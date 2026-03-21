@@ -1,6 +1,7 @@
 # JWT認証
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
+from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import jwt
 
@@ -9,6 +10,18 @@ SECRET_KEY = "secret"
 ALGORITHM = "HS256"
 
 oauth2_scheme= OAuth2PasswordBearer(tokenUrl="login")
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+# ハッシュ化
+def hash_password(password: str):
+    return pwd_context.hash(password)
+
+
+# 検証
+def verify_password(plain_password: str, hashed_password:str):
+    return pwd_context.verify(plain_password, hashed_password)
 
 
 def create_access_token(data: dict):

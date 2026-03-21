@@ -1,5 +1,6 @@
 # モデル作成（DB設計）
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from app.database import Base
 from datetime import datetime
 
@@ -21,3 +22,6 @@ class Memo(Base):
     title = Column(String)
     content = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
+    
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User")
