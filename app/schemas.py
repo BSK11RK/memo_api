@@ -1,5 +1,5 @@
 # スキーマ（入力・出力）
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 
@@ -11,8 +11,8 @@ class UserCreate(BaseModel):
 
 # 入力（作成）
 class MemoCreate(BaseModel):
-    title: str
-    content: str
+    title: str = Field(..., min_length=1, max_length=100, description="メモのコンテンツ")
+    content: str = Field(..., min_length=1, max_length=1000, description="メモの内容")
     
 
 # 出力   
