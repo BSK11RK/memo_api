@@ -22,6 +22,6 @@ class Memo(Base):
     title = Column(String)
     content = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
-    
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User")
