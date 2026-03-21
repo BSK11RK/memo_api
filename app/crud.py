@@ -31,10 +31,23 @@ def create_memo(db: Session, memo: schemas.MemoCreate, user_id: int):
 
 
 # 全件取得
-def get_memos(db: Session, user_id: int):
-    return db.query(models.Memo).filter(
+def get_memos(db: Session, user_id: int, page: int, limit: int, sort: str):
+    query = db.query(models.Memo).filter(
         models.Memo.user_id == user_id
-    ).all()
+    )
+    
+    # ソート
+    if sort.startswith("-"):
+        column = getattr(models.Memo, sort[1:], models.Memo.id)
+        query = query.order_by(column.desc())
+    else:
+        column = getattr(models.Memo, sort, models.Memo.id)
+        query = query.order_by(column.asc())
+        
+    # ページネーション
+    offset = (page - 1) * limit
+    
+    return query.offset(offset).limit(limit).all()
 
 
 # 1件取得

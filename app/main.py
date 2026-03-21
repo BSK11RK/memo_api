@@ -1,5 +1,5 @@
 # FastAPI起動
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.database import SessionLocal, engine
@@ -59,17 +59,24 @@ def create_memo(
 @app.get("/memos")
 def read_memos(
     db: Session = Depends(get_db),
-    username: str = Depends(get_current_user)
+    username: str = Depends(get_current_user),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    sort: str = Query("id")
 ):
     user = db.query(models.User).filter(
         models.User.username == username
     ).first()
-    return crud.get_memos(db, user.id)
+    return crud.get_memos(db, user.id, page, limit, sort)
 
 
 # 1件取得
 @app.get("/memos/{memo_id}", response_model=schemas.MemoResponse)
-def read_memo(memo_id: int, db: Session = Depends(get_db)):
+def read_memo(
+    memo_id: int, 
+    db: Session = Depends(get_db),
+    username: str = Depends(get_current_user),
+):
     memo = crud.get_memo(db, memo_id)
     if memo is None:
         raise HTTPException(status_code=404, detail="Memo not found")
@@ -78,7 +85,12 @@ def read_memo(memo_id: int, db: Session = Depends(get_db)):
 
 # 更新
 @app.put("/memos/{memo_id}", response_model=schemas.MemoResponse)
-def update_memo(memo_id: int, memo: schemas.MemoUpdate, db: Session = Depends(get_db)):
+def update_memo(
+    memo_id: int, 
+    memo: schemas.MemoUpdate, 
+    db: Session = Depends(get_db),
+    username: str = Depends(get_current_user)
+):
     updated = crud.update_memo(db, memo_id, memo)
     if updated is None:
         raise HTTPException(status_code=404, detail="Memo not found")
@@ -87,7 +99,11 @@ def update_memo(memo_id: int, memo: schemas.MemoUpdate, db: Session = Depends(ge
 
 # 削除
 @app.delete("/memos/{memo_id}")
-def delete_memo(memo_id: int, db: Session = Depends(get_db)):
+def delete_memo(
+    memo_id: int, 
+    db: Session = Depends(get_db),
+    username: str = Depends(get_current_user)
+):
     deleted = crud.delete_memo(db, memo_id)
     if deleted is None:
         raise HTTPException(status_code=404, detail="Memo not found")
