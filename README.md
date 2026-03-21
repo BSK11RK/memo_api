@@ -29,6 +29,7 @@ FastAPIを使用して作成したメモ管理APIです。
 
 ## 4. ディレクトリ構成
 
+```
 memo_api/
 ├── app/
 │   ├── main.py        # エントリーポイント
@@ -42,12 +43,14 @@ memo_api/
 ├── Dockerfile
 ├── requirements.txt
 └── README.md
+```
 
 
 ## 5. API例
 
 ### ログイン
 
+```
 POST /login
 
 request:
@@ -61,7 +64,7 @@ response:
   "access_token": "xxxxx",
   "token_type": "bearer"
 }
-
+```
 
 ## 6. 実行方法
 
