@@ -5,6 +5,8 @@
 FastAPIを使用して作成したメモ管理APIです。
 ユーザー登録・認証（JWT）・メモのCRUD機能を実装しています。
 
+バックエンド開発の学習およびポートフォリオとして作成しました。
+
 
 ## 2. 機能
 
@@ -67,15 +69,25 @@ response:
   "access_token": "xxxxx",
   "token_type": "bearer"
 }
+
+※ 取得したaccess_tokenをAuthorizationヘッダーに設定してAPIを利用します。
 ```
 
 
-## 6. メモ取得
+## 6. API使用例
+
+### メモ一覧取得
 
 GET /memos?page=1&limit=10&sort=-created_at
 
 
 ## 7. 実行方法
+
+### 環境変数
+
+.envファイルを作成し、以下を設定してください。
+
+SECRET_KEY=your_secret_key
 
 ### Dockerで起動
 
@@ -86,17 +98,22 @@ docker-compose up --build
 http://localhost:8000/docs
 
 
-## 8. 工夫した点
+## 8. APIドキュメント画面
+
+![swagger](./docs/swagger.png)
+
+
+## 9. 工夫した点
 
 - JWT認証を導入し認証付きAPIを実装
 - パスワードをハッシュ化してセキュリティを強化
-- ユーザーごとにデータを分離
+- ユーザーごとにメモを分離し、他ユーザーのデータにアクセスできない設計にした
 - バリデーションにより不正入力を防止
 - ページネーション・ソート機能を実装し実務的なAPIにした
 - updated_atを追加し更新履歴を管理
 
 
-## 9. 今後の改善
+## 10. 今後の改善
 
 - PostgreSQL対応
 - ページネーションの最適化（total countなど）
