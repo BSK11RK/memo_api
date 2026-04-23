@@ -100,7 +100,7 @@ http://localhost:8000/docs
 
 ## 8. APIドキュメント画面
 
-![swagger](./docs/swagger.png)
+![swagger](./docs/swagger_memo.png)
 
 
 ## 9. 工夫した点

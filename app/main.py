@@ -21,12 +21,12 @@ def get_db():
         db.close()
         
 
-@app.post("/register")
+@app.post("/register", tags=["Auth"])
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db, user)
 
 
-@app.post("/login")     
+@app.post("/login", tags=["Auth"])     
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
@@ -43,7 +43,7 @@ def login(
 
 
 # メモを作成（認証必須）
-@app.post("/memos")
+@app.post("/memos", tags=["Memo"])
 def create_memo(
     memo: schemas.MemoCreate, 
     db: Session =  Depends(get_db),
@@ -56,7 +56,7 @@ def create_memo(
 
 
 # 全件取得
-@app.get("/memos")
+@app.get("/memos", tags=["Memo"])
 def read_memos(
     db: Session = Depends(get_db),
     username: str = Depends(get_current_user),
@@ -71,7 +71,7 @@ def read_memos(
 
 
 # 1件取得
-@app.get("/memos/{memo_id}", response_model=schemas.MemoResponse)
+@app.get("/memos/{memo_id}", response_model=schemas.MemoResponse, tags=["Memo"])
 def read_memo(
     memo_id: int, 
     db: Session = Depends(get_db),
@@ -84,7 +84,7 @@ def read_memo(
 
 
 # 更新
-@app.put("/memos/{memo_id}", response_model=schemas.MemoResponse)
+@app.put("/memos/{memo_id}", response_model=schemas.MemoResponse, tags=["Memo"])
 def update_memo(
     memo_id: int, 
     memo: schemas.MemoUpdate, 
@@ -98,7 +98,7 @@ def update_memo(
 
 
 # 削除
-@app.delete("/memos/{memo_id}")
+@app.delete("/memos/{memo_id}", tags=["Memo"])
 def delete_memo(
     memo_id: int, 
     db: Session = Depends(get_db),
@@ -111,7 +111,7 @@ def delete_memo(
 
 
 # 検索機能（認証必須）
-@app.get("/memos/search", response_model=list[schemas.MemoResponse])
+@app.get("/memos/search", response_model=list[schemas.MemoResponse],tags=["Memo"])
 def search_memos(
     q: str, 
     db: Session = Depends(get_db),
